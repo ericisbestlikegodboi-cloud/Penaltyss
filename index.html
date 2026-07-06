@@ -1,0 +1,582 @@
+diff --git a/index.html b/index.html
+index 7f19af3aa33b997a1e52b72eec887644cba33ab4..9fc42a1cd7cea21316d3b092b57b873579f3d0c7 100644
+--- a/index.html
++++ b/index.html
+@@ -1,491 +1,98 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-  <title>World Cup 2026 Knockout Predictor</title>
++  <title>Ultimate XI: Draft & Sim</title>
+   <style>
+     :root {
+-      --bg: #061630;
+-      --panel: #0b2348;
+-      --panel-2: #102d5c;
+-      --ink: #eef6ff;
+-      --muted: #a8c0df;
+-      --gold: #ffd166;
+-      --cyan: #51d6ff;
+-      --green: #4ade80;
+-      --red: #fb7185;
+-      --line: rgba(123, 182, 255, 0.28);
+-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.36);
+-    }
+-
+-    * { box-sizing: border-box; }
+-
+-    body {
+-      margin: 0;
+-      min-height: 100vh;
+-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+-      color: var(--ink);
+-      background:
+-        radial-gradient(circle at 20% 10%, rgba(81, 214, 255, 0.22), transparent 28rem),
+-        radial-gradient(circle at 85% 5%, rgba(255, 209, 102, 0.16), transparent 24rem),
+-        linear-gradient(145deg, #030917 0%, var(--bg) 42%, #071f45 100%);
+-    }
+-
+-    header {
+-      padding: 34px 22px 18px;
+-      text-align: center;
+-    }
+-
+-    h1 {
+-      margin: 0;
+-      font-size: clamp(2rem, 4.8vw, 4.6rem);
+-      letter-spacing: -0.055em;
+-      text-transform: uppercase;
+-      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+-    }
+-
+-    .subtitle {
+-      max-width: 850px;
+-      margin: 14px auto 0;
+-      color: var(--muted);
+-      font-size: 1.02rem;
+-      line-height: 1.55;
+-    }
+-
+-    .rules {
+-      display: flex;
+-      flex-wrap: wrap;
+-      justify-content: center;
+-      gap: 10px;
+-      margin: 18px auto 0;
+-    }
+-
+-    .pill {
+-      border: 1px solid var(--line);
+-      background: rgba(9, 34, 72, 0.76);
+-      border-radius: 999px;
+-      padding: 8px 12px;
+-      color: #dceeff;
+-      font-weight: 700;
+-      font-size: 0.86rem;
+-    }
+-
+-    main {
+-      width: min(1760px, 100%);
+-      margin: 0 auto;
+-      padding: 18px;
+-    }
+-
+-    .toolbar {
+-      display: flex;
+-      justify-content: space-between;
+-      align-items: center;
+-      gap: 14px;
+-      margin: 0 auto 18px;
+-      padding: 14px;
+-      border: 1px solid var(--line);
+-      border-radius: 22px;
+-      background: rgba(5, 20, 44, 0.72);
+-      box-shadow: var(--shadow);
+-    }
+-
+-    .round-status {
+-      font-weight: 900;
+-      color: var(--gold);
+-      letter-spacing: 0.04em;
+-      text-transform: uppercase;
+-    }
+-
+-    button {
+-      border: 0;
+-      border-radius: 999px;
+-      padding: 10px 15px;
+-      background: linear-gradient(135deg, var(--gold), #ff9f1c);
+-      color: #061630;
+-      cursor: pointer;
+-      font-weight: 900;
+-      box-shadow: 0 8px 20px rgba(255, 161, 28, 0.25);
+-      transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+-    }
+-
+-    button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+-    button:disabled { cursor: not-allowed; opacity: 0.48; box-shadow: none; }
+-
+-    .bracket {
+-      display: grid;
+-      grid-template-columns: repeat(5, minmax(280px, 1fr));
+-      gap: 18px;
+-      overflow-x: auto;
+-      padding-bottom: 18px;
+-    }
+-
+-    .round {
+-      min-width: 280px;
+-      border: 1px solid var(--line);
+-      border-radius: 24px;
+-      background: rgba(5, 18, 42, 0.56);
+-      box-shadow: var(--shadow);
+-      padding: 14px;
+-    }
+-
+-    .round h2 {
+-      margin: 3px 4px 14px;
+-      font-size: 1.05rem;
+-      color: var(--cyan);
+-      letter-spacing: 0.055em;
+-      text-transform: uppercase;
+-    }
+-
+-    .match {
+-      position: relative;
+-      margin-bottom: 14px;
+-      padding: 12px;
+-      border: 1px solid rgba(123, 182, 255, 0.22);
+-      border-radius: 20px;
+-      background: linear-gradient(180deg, rgba(16, 45, 92, 0.94), rgba(8, 28, 63, 0.94));
+-    }
+-
+-    .match.empty {
+-      min-height: 178px;
+-      display: grid;
+-      place-items: center;
+-      color: #7fa2cc;
+-      border-style: dashed;
+-      text-align: center;
+-    }
+-
+-    .team-card {
+-      display: grid;
+-      grid-template-columns: 1fr auto;
+-      gap: 8px;
+-      padding: 10px;
+-      margin-bottom: 8px;
+-      border-radius: 16px;
+-      background: rgba(255, 255, 255, 0.055);
+-      border: 1px solid transparent;
+-    }
+-
+-    .team-card.advantage { border-color: var(--gold); box-shadow: inset 0 0 0 1px rgba(255, 209, 102, 0.32); }
+-    .team-card.winner { border-color: var(--green); background: rgba(74, 222, 128, 0.12); }
+-    .team-card.loser { opacity: 0.64; }
+-
+-    .team-name { font-size: 1rem; font-weight: 900; }
+-    .percent { color: var(--gold); font-weight: 900; }
+-    .styles, .stats { grid-column: 1 / -1; color: var(--muted); font-size: 0.78rem; line-height: 1.35; }
+-    .advantage-note { color: var(--gold); font-weight: 900; }
+-
+-    .scoreline {
+-      margin: 10px 0;
+-      padding: 10px;
+-      border-radius: 14px;
+-      background: rgba(2, 10, 24, 0.52);
+-      color: #dbeafe;
+-      font-weight: 800;
+-      text-align: center;
+-      line-height: 1.45;
+-    }
+-
+-    .match-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+-    .waiting { color: var(--muted); font-size: 0.86rem; }
+-
+-    .champion-screen {
+-      display: none;
+-      margin: 16px auto 0;
+-      padding: 32px 20px;
+-      text-align: center;
+-      border-radius: 30px;
+-      border: 1px solid rgba(255, 209, 102, 0.55);
+-      background: radial-gradient(circle, rgba(255, 209, 102, 0.22), rgba(9, 34, 72, 0.88) 62%);
+-      box-shadow: var(--shadow);
+-    }
+-
+-    .champion-screen.show { display: block; animation: pop 0.55s ease both; }
+-    .trophy { font-size: clamp(3.2rem, 10vw, 7rem); margin-bottom: 8px; }
+-    .champion-name { font-size: clamp(2.2rem, 7vw, 5.8rem); font-weight: 1000; color: var(--gold); letter-spacing: -0.05em; }
+-    .confetti { font-size: 1.8rem; letter-spacing: 0.25em; margin-top: 14px; }
+-
+-    @keyframes pop {
+-      from { opacity: 0; transform: scale(0.92) translateY(12px); }
+-      to { opacity: 1; transform: scale(1) translateY(0); }
+-    }
+-
+-    @media (max-width: 900px) {
+-      .toolbar { align-items: flex-start; flex-direction: column; }
+-      .bracket { grid-template-columns: repeat(5, 290px); }
+-    }
++      --bg: #061119; --panel: #0d2330; --panel2: #12364a; --ink: #f4fbff; --muted: #a9c4d3;
++      --line: rgba(168, 218, 234, .22); --gold: #ffd166; --green: #63e6be; --red: #ff6b7a;
++      --blue: #74c0fc; --purple: #c77dff; --shadow: 0 24px 70px rgba(0,0,0,.35);
++    }
++    *{box-sizing:border-box} body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 20% 5%,rgba(116,192,252,.22),transparent 28rem),radial-gradient(circle at 80% 12%,rgba(255,209,102,.18),transparent 26rem),linear-gradient(135deg,#02070b,#061119 45%,#092033)}
++    header{padding:34px 18px 14px;text-align:center} h1{margin:0;font-size:clamp(2.2rem,6vw,5.8rem);letter-spacing:-.07em;text-transform:uppercase;line-height:.9}.subtitle{max-width:980px;margin:14px auto;color:var(--muted);line-height:1.55}.hidden{display:none!important}
++    main{width:min(1280px,100%);margin:auto;padding:18px}.screen{border:1px solid var(--line);border-radius:30px;background:rgba(5,21,31,.82);box-shadow:var(--shadow);padding:22px;margin-bottom:18px}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:center}.hero-card{border-radius:26px;padding:22px;background:linear-gradient(145deg,rgba(18,54,74,.95),rgba(7,24,35,.95));border:1px solid var(--line)}
++    h2,h3{margin:0 0 12px}.grid{display:grid;gap:14px}.modes{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.mode,.player-card,.opponent-card,.slot,.statbox{border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.055);padding:15px}.mode{cursor:pointer;transition:.15s}.mode:hover,.player-card:hover{transform:translateY(-2px);border-color:var(--gold)}.mode.selected,.player-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,209,102,.2) inset}
++    button{border:0;border-radius:999px;padding:11px 16px;background:linear-gradient(135deg,var(--gold),#ff9f1c);color:#061119;font-weight:950;cursor:pointer;box-shadow:0 12px 28px rgba(255,159,28,.22)}button.secondary{background:linear-gradient(135deg,#dff7ff,#74c0fc)}button.danger{background:linear-gradient(135deg,#ffc9c9,#ff6b7a)}button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}button:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px)}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.pill{display:inline-flex;gap:6px;border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:#d9f3ff;background:rgba(116,192,252,.08);font-weight:800;font-size:.85rem}.big{font-size:1.35rem;font-weight:1000}.muted{color:var(--muted)}
++    .draft-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.progress{height:12px;background:#061119;border-radius:999px;overflow:hidden;border:1px solid var(--line);margin:12px 0}.bar{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0}.cards{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.player-card{cursor:pointer}.rating{font-size:2.2rem;font-weight:1000;color:var(--gold);letter-spacing:-.06em}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.mini{background:rgba(0,0,0,.18);border-radius:12px;padding:7px;text-align:center}.mini b{display:block;color:#fff}.lineup{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.slot strong{display:block;color:var(--gold)}
++    .scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;text-align:center}.score{font-size:clamp(2.6rem,7vw,5.4rem);font-weight:1000;letter-spacing:-.08em}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.event-log{height:260px;overflow:auto;border:1px solid var(--line);border-radius:20px;background:rgba(0,0,0,.18);padding:12px}.log-line{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}.decision{border:1px solid rgba(255,209,102,.45);background:rgba(255,209,102,.09);border-radius:22px;padding:16px;margin:14px 0}.fixture{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0}.won{color:var(--green)}.lost{color:var(--red)}.celebrate{text-align:center;background:radial-gradient(circle,rgba(255,209,102,.24),rgba(5,21,31,.9) 60%)}.trophy{font-size:7rem;filter:drop-shadow(0 20px 30px rgba(0,0,0,.35))}@media(max-width:760px){.hero{grid-template-columns:1fr}.scoreboard{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+   </style>
+ </head>
+ <body>
+-  <header>
+-    <h1>World Cup 2026 Knockout Predictor</h1>
+-    <p class="subtitle">Start at the Round of 32, simulate every knockout tie, watch style matchups influence the odds, and crown a champion. Stronger teams usually win — but every team keeps at least a 15% upset chance.</p>
+-    <div class="rules" aria-label="Style rules">
+-      <span class="pill">Possession beats Wing Play</span>
+-      <span class="pill">Wing Play beats Counter Attack</span>
+-      <span class="pill">Counter Attack beats Possession</span>
+-    </div>
+-  </header>
+-
+-  <main>
+-    <section class="toolbar">
+-      <div>
+-        <div class="round-status" id="roundStatus">Round of 32 in progress</div>
+-        <div class="waiting">Simulate matches from left to right. Winners automatically fill the next round.</div>
+-      </div>
+-      <button id="resetButton" type="button">Reset Tournament</button>
+-    </section>
+-
+-    <section class="bracket" id="bracket" aria-live="polite"></section>
+-
+-    <section class="champion-screen" id="championScreen">
+-      <div class="trophy">🏆</div>
+-      <div>World Cup 2026 Champion</div>
+-      <div class="champion-name" id="championName"></div>
+-      <div class="confetti">🎉 ✨ 🎊 ⚽ 🎊 ✨ 🎉</div>
+-    </section>
+-  </main>
+-
+-  <script>
+-    const STYLE_RULES = {
+-      possession: 'wing play',
+-      'wing play': 'counter attack',
+-      'counter attack': 'possession'
+-    };
+-
+-    const ROUND_NAMES = ['Round of 32', 'Round of 16', 'Quarterfinals', 'Semifinals', 'Final'];
+-    const FLAGS = {
+-      Canada: '🇨🇦', 'South Africa': '🇿🇦', Brazil: '🇧🇷', Japan: '🇯🇵', Germany: '🇩🇪', Paraguay: '🇵🇾', Netherlands: '🇳🇱', Morocco: '🇲🇦',
+-      'Ivory Coast': '🇨🇮', Norway: '🇳🇴', France: '🇫🇷', Sweden: '🇸🇪', Mexico: '🇲🇽', Ecuador: '🇪🇨', England: '🏴', 'DR Congo': '🇨🇩',
+-      Belgium: '🇧🇪', Senegal: '🇸🇳', USA: '🇺🇸', 'Bosnia and Herzegovina': '🇧🇦', Spain: '🇪🇸', Austria: '🇦🇹', Portugal: '🇵🇹', Croatia: '🇭🇷',
+-      Switzerland: '🇨🇭', Algeria: '🇩🇿', Australia: '🇦🇺', Egypt: '🇪🇬', Argentina: '🇦🇷', 'Cape Verde': '🇨🇻', Colombia: '🇨🇴', Ghana: '🇬🇭'
+-    };
+-
+-    const TEAMS = {
+-      Canada: team(80, 79, 83, 82, 'counter attack', 'wing play'),
+-      'South Africa': team(68, 70, 75, 73, 'counter attack', 'possession'),
+-      Brazil: team(94, 96, 88, 90, 'possession', 'wing play'),
+-      Japan: team(84, 83, 89, 86, 'possession', 'counter attack'),
+-      Germany: team(90, 91, 86, 85, 'possession', 'wing play'),
+-      Paraguay: team(73, 74, 80, 76, 'counter attack', 'wing play'),
+-      Netherlands: team(89, 90, 87, 88, 'possession', 'wing play'),
+-      Morocco: team(83, 82, 88, 84, 'counter attack', 'wing play'),
+-      'Ivory Coast': team(78, 80, 79, 81, 'wing play', 'counter attack'),
+-      Norway: team(82, 86, 78, 80, 'wing play', 'counter attack'),
+-      France: team(95, 96, 89, 91, 'counter attack', 'wing play'),
+-      Sweden: team(79, 80, 84, 79, 'counter attack', 'wing play'),
+-      Mexico: team(81, 82, 85, 83, 'possession', 'wing play'),
+-      Ecuador: team(78, 79, 82, 82, 'counter attack', 'wing play'),
+-      England: team(92, 94, 86, 89, 'possession', 'wing play'),
+-      'DR Congo': team(69, 72, 74, 76, 'counter attack', 'wing play'),
+-      Belgium: team(87, 89, 83, 82, 'possession', 'counter attack'),
+-      Senegal: team(82, 84, 86, 84, 'counter attack', 'wing play'),
+-      USA: team(80, 81, 83, 84, 'counter attack', 'wing play'),
+-      'Bosnia and Herzegovina': team(74, 77, 78, 75, 'possession', 'counter attack'),
+-      Spain: team(93, 94, 90, 90, 'possession', 'wing play'),
+-      Austria: team(81, 82, 85, 84, 'possession', 'counter attack'),
+-      Portugal: team(91, 93, 86, 88, 'wing play', 'possession'),
+-      Croatia: team(86, 87, 90, 84, 'possession', 'counter attack'),
+-      Switzerland: team(82, 82, 86, 81, 'possession', 'counter attack'),
+-      Algeria: team(77, 79, 80, 82, 'counter attack', 'wing play'),
+-      Australia: team(75, 76, 82, 80, 'counter attack', 'wing play'),
+-      Egypt: team(79, 83, 81, 80, 'counter attack', 'wing play'),
+-      Argentina: team(96, 96, 91, 92, 'possession', 'counter attack'),
+-      'Cape Verde': team(67, 69, 76, 78, 'counter attack', 'wing play'),
+-      Colombia: team(84, 85, 83, 86, 'wing play', 'possession'),
+-      Ghana: team(76, 78, 79, 80, 'counter attack', 'wing play')
+-    };
+-
+-    const INITIAL_MATCHUPS = [
+-      ['Canada', 'South Africa'], ['Brazil', 'Japan'], ['Germany', 'Paraguay'], ['Netherlands', 'Morocco'],
+-      ['Ivory Coast', 'Norway'], ['France', 'Sweden'], ['Mexico', 'Ecuador'], ['England', 'DR Congo'],
+-      ['Belgium', 'Senegal'], ['USA', 'Bosnia and Herzegovina'], ['Spain', 'Austria'], ['Portugal', 'Croatia'],
+-      ['Switzerland', 'Algeria'], ['Australia', 'Egypt'], ['Argentina', 'Cape Verde'], ['Colombia', 'Ghana']
+-    ];
+-
+-    let rounds;
+-
+-    function team(rankingScore, playerScore, chemistryScore, formScore, mainStyle, secondaryStyle) {
+-      return { rankingScore, playerScore, chemistryScore, formScore, mainStyle, secondaryStyle };
+-    }
+-
+-    function createTournament() {
+-      rounds = ROUND_NAMES.map((name, roundIndex) => ({
+-        name,
+-        matches: Array.from({ length: 16 / Math.pow(2, roundIndex) }, (_, matchIndex) => ({
+-          id: `${roundIndex}-${matchIndex}`,
+-          teams: roundIndex === 0 ? INITIAL_MATCHUPS[matchIndex] : [null, null],
+-          result: null
+-        }))
+-      }));
+-      document.getElementById('championScreen').classList.remove('show');
+-      render();
+-    }
+-
+-    function styleAdvantage(teamA, teamB) {
+-      const a = TEAMS[teamA];
+-      const b = TEAMS[teamB];
+-      const aBeats = [a.mainStyle, a.secondaryStyle].some(style => STYLE_RULES[style] === b.mainStyle || STYLE_RULES[style] === b.secondaryStyle);
+-      const bBeats = [b.mainStyle, b.secondaryStyle].some(style => STYLE_RULES[style] === a.mainStyle || STYLE_RULES[style] === a.secondaryStyle);
+-      if (aBeats && !bBeats) return teamA;
+-      if (bBeats && !aBeats) return teamB;
+-      if (STYLE_RULES[a.mainStyle] === b.mainStyle) return teamA;
+-      if (STYLE_RULES[b.mainStyle] === a.mainStyle) return teamB;
+-      return null;
+-    }
+-
+-    function rawStrength(name, opponent) {
+-      const data = TEAMS[name];
+-      const styleBonus = styleAdvantage(name, opponent) === name ? 100 : 0;
+-      return data.rankingScore * 0.30 + data.playerScore * 0.30 + data.chemistryScore * 0.15 + data.formScore * 0.15 + styleBonus * 0.10;
+-    }
+-
+-    function winChance(teamA, teamB) {
+-      const a = rawStrength(teamA, teamB);
+-      const b = rawStrength(teamB, teamA);
+-      const unclamped = a / (a + b);
+-      return Math.min(0.85, Math.max(0.15, unclamped));
+-    }
+-
+-    function goalsFor(chance, phase) {
+-      const base = phase === 'et' ? 0.28 : 1.15;
+-      const swing = chance - 0.5;
+-      let goals = 0;
+-      const expected = Math.max(0.12, base + swing * 1.25);
+-      for (let i = 0; i < 5; i++) {
+-        if (Math.random() < expected / (i + 2.1)) goals++;
+-      }
+-      return phase === 'et' ? Math.min(goals, 2) : Math.min(goals, 5);
+-    }
+-
+-    function simulateMatch(roundIndex, matchIndex) {
+-      const match = rounds[roundIndex].matches[matchIndex];
+-      const [teamA, teamB] = match.teams;
+-      if (!teamA || !teamB || match.result) return;
+-
+-      const chanceA = winChance(teamA, teamB);
+-      let scoreA = goalsFor(chanceA, 'regular');
+-      let scoreB = goalsFor(1 - chanceA, 'regular');
+-      let note = 'Full time';
+-
+-      if (scoreA === scoreB) {
+-        const etA = goalsFor(chanceA, 'et');
+-        const etB = goalsFor(1 - chanceA, 'et');
+-        scoreA += etA;
+-        scoreB += etB;
+-        note = `After extra time (${etA}-${etB} in ET)`;
+-      }
+-
+-      let winner;
+-      let penalties = null;
+-      if (scoreA === scoreB) {
+-        let penA = 0;
+-        let penB = 0;
+-        for (let kick = 0; kick < 5; kick++) {
+-          if (Math.random() < 0.74 + (chanceA - 0.5) * 0.1) penA++;
+-          if (Math.random() < 0.74 - (chanceA - 0.5) * 0.1) penB++;
+-        }
+-        while (penA === penB) {
+-          if (Math.random() < 0.74 + (chanceA - 0.5) * 0.1) penA++;
+-          if (Math.random() < 0.74 - (chanceA - 0.5) * 0.1) penB++;
+-        }
+-        penalties = [penA, penB];
+-        winner = penA > penB ? teamA : teamB;
+-        note = 'Won on penalties';
+-      } else {
+-        winner = scoreA > scoreB ? teamA : teamB;
+-      }
+-
+-      match.result = { score: [scoreA, scoreB], penalties, winner, note };
+-      advanceWinner(roundIndex, matchIndex, winner);
+-      render();
+-    }
+-
+-    function advanceWinner(roundIndex, matchIndex, winner) {
+-      if (roundIndex === rounds.length - 1) {
+-        document.getElementById('championName').textContent = `${FLAGS[winner]} ${winner}`;
+-        document.getElementById('championScreen').classList.add('show');
+-        return;
+-      }
+-      const nextMatch = rounds[roundIndex + 1].matches[Math.floor(matchIndex / 2)];
+-      nextMatch.teams[matchIndex % 2] = winner;
+-      nextMatch.result = null;
+-      clearFuture(roundIndex + 1, Math.floor(matchIndex / 2));
+-    }
+-
+-    function clearFuture(changedRoundIndex, changedMatchIndex) {
+-      for (let r = changedRoundIndex + 1; r < rounds.length; r++) {
+-        rounds[r].matches.forEach(match => {
+-          match.teams = [null, null];
+-          match.result = null;
+-        });
+-      }
+-      let sourceIndex = changedMatchIndex;
+-      for (let r = changedRoundIndex + 1; r < rounds.length; r++) {
+-        const destination = rounds[r].matches[Math.floor(sourceIndex / 2)];
+-        destination.teams[sourceIndex % 2] = null;
+-        sourceIndex = Math.floor(sourceIndex / 2);
+-      }
+-      document.getElementById('championScreen').classList.remove('show');
+-    }
+-
+-    function teamCard(name, opponent, result) {
+-      if (!name) return '<div class="team-card"><div class="team-name">TBD</div><div class="styles">Awaiting previous winner</div></div>';
+-      const data = TEAMS[name];
+-      const advantage = opponent && styleAdvantage(name, opponent) === name;
+-      const won = result && result.winner === name;
+-      const lost = result && result.winner !== name;
+-      const chance = opponent ? Math.round(winChance(name, opponent) * 100) : null;
+-      return `
+-        <div class="team-card ${advantage ? 'advantage' : ''} ${won ? 'winner' : ''} ${lost ? 'loser' : ''}">
+-          <div class="team-name">${FLAGS[name]} ${name}</div>
+-          <div class="percent">${chance ? `${chance}%` : ''}</div>
+-          <div class="styles">Main: ${title(data.mainStyle)} · Secondary: ${title(data.secondaryStyle)} ${advantage ? '<span class="advantage-note"> · Style advantage</span>' : ''}</div>
+-          <div class="stats">Rank ${data.rankingScore} · Players ${data.playerScore} · Chemistry ${data.chemistryScore} · Form ${data.formScore}</div>
+-        </div>`;
+-    }
+-
+-    function renderMatch(match, roundIndex, matchIndex) {
+-      const [teamA, teamB] = match.teams;
+-      if (!teamA || !teamB) return `<article class="match empty">Waiting for winners<br>${rounds[roundIndex].name} Match ${matchIndex + 1}</article>`;
+-      const result = match.result;
+-      const matchupLabel = `${teamA} vs ${teamB}`;
+-      const score = result ? scoreHtml(teamA, teamB, result) : '<div class="scoreline">Pre-match win chances shown above</div>';
+-      return `
+-        <article class="match">
+-          <div class="waiting" style="margin:0 0 8px 2px;">${matchupLabel}</div>
+-          ${teamCard(teamA, teamB, result)}
+-          ${teamCard(teamB, teamA, result)}
+-          ${score}
+-          <div class="match-actions">
+-            <button type="button" ${result ? 'disabled' : ''} onclick="simulateMatch(${roundIndex}, ${matchIndex})">${result ? 'Completed' : 'Simulate Match'}</button>
+-            <span class="waiting" title="${matchupLabel}">${rounds[roundIndex].name} · Match ${matchIndex + 1}</span>
+-          </div>
+-        </article>`;
+-    }
+-
+-    function scoreHtml(teamA, teamB, result) {
+-      const penaltyText = result.penalties ? `<br>Penalties: ${result.penalties[0]}-${result.penalties[1]}` : '';
+-      return `<div class="scoreline">${FLAGS[teamA]} ${teamA} ${result.score[0]} - ${result.score[1]} ${teamB} ${FLAGS[teamB]}<br>${result.note}${penaltyText}<br>Winner: ${FLAGS[result.winner]} ${result.winner}</div>`;
+-    }
+-
+-    function render() {
+-      document.getElementById('bracket').innerHTML = rounds.map((round, roundIndex) => `
+-        <section class="round">
+-          <h2>${round.name}</h2>
+-          ${round.matches.map((match, matchIndex) => renderMatch(match, roundIndex, matchIndex)).join('')}
+-        </section>`).join('');
+-
+-      const activeRound = rounds.find(round => round.matches.some(match => match.teams[0] && match.teams[1] && !match.result));
+-      document.getElementById('roundStatus').textContent = activeRound ? `${activeRound.name} in progress` : 'Tournament complete';
+-    }
+-
+-    function title(value) {
+-      return value.replace(/\b\w/g, letter => letter.toUpperCase());
+-    }
+-
+-    document.getElementById('resetButton').addEventListener('click', createTournament);
+-    createTournament();
+-  </script>
++<header>
++  <h1>Ultimate XI</h1>
++  <p class="subtitle">Draft famous footballers from random countries, using approximate peak FIFA/EA FC career ratings, then guide your squad through interactive minute-by-minute tournament simulations.</p>
++</header>
++<main>
++  <section id="start" class="screen hero">
++    <div class="hero-card"><h2>Build a chaotic legends-era superteam</h2><p class="muted">For every position, a random country appears. Pick one of 3–5 eligible stars, manage chemistry, then make clutch choices during key match events.</p><div class="actions"><button id="newGame">Start New Career</button><button class="secondary" id="quickInfo">How it works</button></div></div>
++    <div class="hero-card"><span class="pill">⚽ 11 starters</span> <span class="pill">🏆 5 tournaments</span> <span class="pill">🎲 Upsets enabled</span><p id="info" class="muted hidden">Chemistry rises when players share countries, leagues, or play styles. Match choices use stats: shoot, dribble, pass, hold, and defend all roll differently.</p></div>
++  </section>
++  <section id="modeScreen" class="screen hidden"><h2>Choose Tournament Mode</h2><div id="modes" class="grid modes"></div><div class="actions" style="margin-top:14px"><button id="beginDraft" disabled>Begin Draft</button><button class="secondary" onclick="show('start')">Back</button></div></section>
++  <section id="draftScreen" class="screen hidden"><div class="draft-head"><div><h2 id="draftTitle">Draft</h2><div class="muted" id="draftCountry"></div></div><div><span class="pill" id="chemPill">Chemistry 0</span> <span class="pill" id="ratingPill">Rating 0</span></div></div><div class="progress"><div id="draftBar" class="bar"></div></div><div id="options" class="grid cards"></div></section>
++  <section id="squadScreen" class="screen hidden"><h2>Final Squad</h2><div id="squadSummary" class="actions"></div><div id="lineup" class="grid lineup" style="margin:14px 0"></div><div class="actions"><button id="startTournament">Start Tournament</button><button class="secondary" id="redraft">Redraft Team</button></div></section>
++  <section id="tournamentScreen" class="screen hidden"><h2 id="tournamentTitle">Tournament</h2><div id="fixtures"></div><div class="actions" style="margin-top:14px"><button id="playNext">Play Next Match</button><button class="danger" id="restart">Restart Game</button></div></section>
++  <section id="matchScreen" class="screen hidden"><div class="scoreboard"><div><h2>Your XI</h2><div id="userStyle" class="muted"></div></div><div class="score"><span id="homeGoals">0</span> - <span id="awayGoals">0</span></div><div><h2 id="oppName">Opponent</h2><div id="oppStyle" class="muted"></div></div></div><div class="metrics" style="margin:14px 0"><div class="statbox">Minute<br><b id="minute">0'</b></div><div class="statbox">Possession<br><b id="poss">50%</b></div><div class="statbox">Shots<br><b id="shots">0 - 0</b></div><div class="statbox">Round<br><b id="roundLabel">1</b></div></div><div id="decision" class="decision hidden"></div><div id="log" class="event-log"></div><div class="actions" style="margin-top:14px"><button id="simBtn">Simulate Until Event</button><button class="secondary" id="autoBtn">Auto Resolve Match</button></div></section>
++  <section id="postMatch" class="screen hidden"><h2>Match Report</h2><div id="report"></div><div class="actions" style="margin-top:14px"><button id="continueTournament">Continue</button></div></section>
++  <section id="endScreen" class="screen celebrate hidden"><div class="trophy" id="endIcon">🏆</div><h2 id="endTitle"></h2><p id="endText" class="muted"></p><div id="endSummary"></div><div class="actions" style="justify-content:center;margin-top:18px"><button id="playAgain">Play Again</button></div></section>
++</main>
++<script>
++const positions=['GK','LB','CB','CB','RB','CM','CM','CAM','LW','RW','ST'];
++const tournaments={champions:{name:'Champions League-style vs Prime Clubs',opponents:['2009 Barcelona','2011 Barcelona','2014 Real Madrid','2017 Real Madrid','2008 Manchester United','2020 Bayern Munich','2004 Arsenal','2010 Inter Milan','2005 AC Milan','2019 Liverpool']},world:{name:'World Cup',opponents:['Brazil 2002','France 2018','Argentina 2022','Spain 2010','Germany 2014','Italy 2006','Netherlands 2010']},euros:{name:'Euros',opponents:['Spain 2012','Portugal 2016','Greece 2004','France 2000','Italy 2021','Germany 1996']},copa:{name:'Copa America',opponents:['Argentina 2021','Brazil 2019','Chile 2015','Uruguay 2011','Colombia 2001']},legends:{name:'Custom Legends Tournament',opponents:['Pele All-Stars','Maradona Icons','Zidane Galacticos','Ronaldo Phenoms','Maldini Wall','Cruyff Dream Team']}};
++const opponents={
++'2009 Barcelona':opp(94,'possession',91),'2011 Barcelona':opp(96,'possession',92),'2014 Real Madrid':opp(91,'counter attack',87),'2017 Real Madrid':opp(94,'wing play',88),'2008 Manchester United':opp(91,'counter attack',88),'2020 Bayern Munich':opp(93,'pressing',87),'2004 Arsenal':opp(90,'possession',84),'2010 Inter Milan':opp(89,'defensive',91),'2005 AC Milan':opp(92,'possession',93),'2019 Liverpool':opp(92,'pressing',89),'Brazil 2002':opp(94,'wing play',85),'France 2018':opp(92,'counter attack',89),'Argentina 2022':opp(91,'possession',88),'Spain 2010':opp(94,'possession',90),'Germany 2014':opp(92,'pressing',87),'Italy 2006':opp(90,'defensive',92),'Netherlands 2010':opp(88,'counter attack',86),'Spain 2012':opp(95,'possession',90),'Portugal 2016':opp(86,'defensive',88),'Greece 2004':opp(82,'defensive',87),'France 2000':opp(91,'possession',89),'Italy 2021':opp(88,'pressing',87),'Germany 1996':opp(86,'wing play',86),'Argentina 2021':opp(89,'possession',86),'Brazil 2019':opp(88,'pressing',87),'Chile 2015':opp(87,'pressing',84),'Uruguay 2011':opp(86,'counter attack',86),'Colombia 2001':opp(83,'wing play',82),'Pele All-Stars':opp(97,'wing play',86),'Maradona Icons':opp(96,'possession',84),'Zidane Galacticos':opp(95,'possession',88),'Ronaldo Phenoms':opp(96,'counter attack',82),'Maldini Wall':opp(93,'defensive',97),'Cruyff Dream Team':opp(94,'possession',87)};
++function opp(rating,style,defense){return{rating,style,defense}}
++const players=[
++ p('Lionel Messi','Argentina',['RW','CAM','ST'],94,85,92,91,96,38,65,'La Liga','possession'),p('Diego Maradona','Argentina',['CAM','ST'],97,88,91,90,97,40,76,'Serie A','possession'),p('Gabriel Batistuta','Argentina',['ST'],91,82,93,72,83,45,82,'Serie A','counter attack'),p('Javier Zanetti','Argentina',['RB','LB','CM'],92,84,70,84,85,91,86,'Serie A','defensive'),p('Angel Di Maria','Argentina',['RW','LW','CAM'],88,90,82,86,90,55,70,'Ligue 1','wing play'),
++ p('Cristiano Ronaldo','Portugal',['LW','ST','RW'],94,92,95,82,91,38,80,'La Liga','counter attack'),p('Luis Figo','Portugal',['RW','LW','CAM'],92,86,84,89,92,45,78,'La Liga','wing play'),p('Rui Costa','Portugal',['CAM','CM'],90,74,81,91,90,48,72,'Serie A','possession'),p('Pepe','Portugal',['CB'],88,70,55,65,62,89,90,'La Liga','defensive'),p('Joao Cancelo','Portugal',['RB','LB','CM'],88,85,73,86,88,80,75,'Premier League','possession'),
++ p('Ronaldo Nazario','Brazil',['ST'],98,94,95,78,95,40,79,'La Liga','counter attack'),p('Ronaldinho','Brazil',['LW','CAM'],95,91,88,91,96,41,80,'La Liga','possession'),p('Pele','Brazil',['ST','CAM'],98,95,96,88,94,50,82,'Brazil','wing play'),p('Neymar','Brazil',['LW','CAM'],92,91,85,86,95,37,60,'Ligue 1','wing play'),p('Roberto Carlos','Brazil',['LB'],91,92,83,82,86,86,86,'La Liga','wing play'),p('Cafu','Brazil',['RB'],91,87,72,84,83,90,84,'Serie A','wing play'),p('Thiago Silva','Brazil',['CB'],90,67,54,74,73,90,79,'Premier League','defensive'),p('Kaka','Brazil',['CAM','CM'],91,88,86,88,91,55,74,'Serie A','possession'),
++ p('Zinedine Zidane','France',['CAM','CM'],96,76,88,96,95,73,86,'La Liga','possession'),p('Thierry Henry','France',['ST','LW'],93,94,91,83,91,53,78,'Premier League','counter attack'),p('Kylian Mbappe','France',['ST','LW','RW'],91,97,90,82,92,39,77,'Ligue 1','counter attack'),p('Patrick Vieira','France',['CM'],91,82,76,84,82,90,91,'Premier League','pressing'),p('Lilian Thuram','France',['CB','RB'],90,79,56,74,72,91,87,'Serie A','defensive'),p('Karim Benzema','France',['ST'],91,80,88,83,88,39,78,'La Liga','possession'),
++ p('Zlatan Ibrahimovic','Sweden',['ST'],90,76,91,81,86,34,86,'Serie A','possession'),p('Henrik Larsson','Sweden',['ST','RW'],88,84,88,78,84,45,74,'La Liga','counter attack'),p('Freddie Ljungberg','Sweden',['LW','RW','CM'],86,86,79,80,84,67,72,'Premier League','pressing'),
++ p('Gianluigi Buffon','Italy',['GK'],97,58,22,62,58,18,86,'Serie A','defensive'),p('Paolo Maldini','Italy',['CB','LB'],94,82,56,82,78,96,82,'Serie A','defensive'),p('Andrea Pirlo','Italy',['CM','CAM'],90,64,76,94,85,70,67,'Serie A','possession'),p('Fabio Cannavaro','Italy',['CB'],90,75,43,65,68,93,84,'La Liga','defensive'),p('Roberto Baggio','Italy',['CAM','ST'],91,80,88,86,90,38,65,'Serie A','possession'),
++ p('Iker Casillas','Spain',['GK'],92,61,20,66,58,22,78,'La Liga','defensive'),p('Xavi','Spain',['CM'],92,68,72,97,91,70,68,'La Liga','possession'),p('Andres Iniesta','Spain',['CM','CAM','LW'],91,76,75,94,92,68,63,'La Liga','possession'),p('Sergio Ramos','Spain',['CB','RB'],91,75,74,77,74,91,86,'La Liga','defensive'),p('Fernando Torres','Spain',['ST'],88,88,88,73,84,45,78,'Premier League','counter attack'),p('David Villa','Spain',['ST','LW'],89,82,90,77,85,40,72,'La Liga','wing play'),
++ p('Manuel Neuer','Germany',['GK'],92,70,25,75,63,30,84,'Bundesliga','pressing'),p('Franz Beckenbauer','Germany',['CB','CM'],93,78,72,88,84,94,82,'Bundesliga','possession'),p('Philipp Lahm','Germany',['RB','LB','CM'],89,82,64,86,86,87,66,'Bundesliga','possession'),p('Lothar Matthaus','Germany',['CM'],93,86,88,88,85,90,88,'Bundesliga','pressing'),p('Miroslav Klose','Germany',['ST'],88,78,88,70,78,48,79,'Bundesliga','wing play'),
++ p('Johan Cruyff','Netherlands',['CAM','ST','LW'],94,89,91,93,94,48,75,'La Liga','possession'),p('Marco van Basten','Netherlands',['ST'],93,82,94,78,86,40,78,'Serie A','possession'),p('Ruud Gullit','Netherlands',['CM','CAM','ST'],93,86,87,88,88,82,90,'Serie A','pressing'),p('Virgil van Dijk','Netherlands',['CB'],91,77,60,71,72,92,86,'Premier League','defensive'),p('Arjen Robben','Netherlands',['RW','LW'],90,92,86,82,92,40,67,'Bundesliga','wing play'),
++ p('Kevin De Bruyne','Belgium',['CM','CAM','RW'],91,76,86,94,88,64,78,'Premier League','possession'),p('Eden Hazard','Belgium',['LW','CAM'],91,91,83,86,95,35,67,'Premier League','wing play'),p('Thibaut Courtois','Belgium',['GK'],90,48,18,55,49,20,84,'La Liga','defensive'),p('Vincent Kompany','Belgium',['CB'],87,69,54,70,66,88,86,'Premier League','defensive'),
++ p('Wayne Rooney','England',['ST','CAM'],90,82,90,82,84,60,88,'Premier League','pressing'),p('Steven Gerrard','England',['CM','CAM'],89,78,87,88,83,80,84,'Premier League','pressing'),p('Frank Lampard','England',['CM','CAM'],88,72,88,84,78,76,78,'Premier League','possession'),p('Rio Ferdinand','England',['CB'],88,79,50,70,73,89,82,'Premier League','defensive'),p('Ashley Cole','England',['LB'],87,82,56,76,80,88,73,'Premier League','defensive'),
++ p('Luka Modric','Croatia',['CM','CAM'],91,76,76,90,91,72,66,'La Liga','possession'),p('Davor Suker','Croatia',['ST'],89,77,90,75,82,42,71,'La Liga','counter attack'),p('Ivan Perisic','Croatia',['LW','RW','LB'],86,85,82,82,84,74,78,'Bundesliga','wing play'),
++ p('Mohamed Salah','Egypt',['RW','ST'],91,93,89,82,90,45,75,'Premier League','counter attack'),p('Sadio Mane','Senegal',['LW','RW','ST'],90,94,85,80,90,46,76,'Premier League','pressing'),p('Didier Drogba','Ivory Coast',['ST'],91,78,90,75,82,55,91,'Premier League','counter attack'),p('Yaya Toure','Ivory Coast',['CM','CAM'],89,78,86,86,84,78,91,'Premier League','possession'),p('George Weah','Liberia',['ST','LW'],93,90,91,78,88,45,82,'Serie A','counter attack'),p('Son Heung-min','South Korea',['LW','ST','RW'],89,88,89,82,87,43,70,'Premier League','counter attack'),p('Christian Pulisic','USA',['LW','RW','CAM'],84,88,78,78,86,38,62,'Premier League','wing play'),p('Alphonso Davies','Canada',['LB','LW'],86,96,72,80,85,78,76,'Bundesliga','wing play')
++];
++function p(name,country,pos,rating,pace,shooting,passing,dribbling,defending,physical,league,style){return{name,country,pos,rating,pace,shooting,passing,dribbling,defending,physical,league,style}}
++let state={mode:null,draftIndex:0,squad:[],fixtures:[],match:null,history:[]};
++const $=id=>document.getElementById(id);function show(id){document.querySelectorAll('main>.screen').forEach(s=>s.classList.add('hidden'));$(id).classList.remove('hidden')}function rnd(a){return a[Math.floor(Math.random()*a.length)]}function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
++$('quickInfo').onclick=()=>$('info').classList.toggle('hidden');$('newGame').onclick=()=>{renderModes();show('modeScreen')};$('restart').onclick=() => location.reload();$('playAgain').onclick=() => location.reload();$('redraft').onclick=()=>startDraft();
++function renderModes(){ $('modes').innerHTML=Object.entries(tournaments).map(([k,t])=>`<div class="mode ${state.mode===k?'selected':''}" onclick="selectMode('${k}')"><h3>${t.name}</h3><p class="muted">${t.opponents.length} possible opponents · ${k==='champions'?'Prime clubs':'Knockout gauntlet'}</p></div>`).join('') };
++function selectMode(k){state.mode=k;$('beginDraft').disabled=false;renderModes()} window.selectMode=selectMode;$('beginDraft').onclick=()=>startDraft();
++function startDraft(){state.draftIndex=0;state.squad=[];state.history=[];show('draftScreen');renderDraft()}
++function countryFor(pos){const eligible=players.filter(x=>x.pos.includes(pos));return rnd([...new Set(eligible.map(x=>x.country))])}
++function renderDraft(){const pos=positions[state.draftIndex],country=countryFor(pos);let opts=players.filter(x=>x.country===country&&x.pos.includes(pos));while(opts.length<3){const extra=rnd(players.filter(x=>x.pos.includes(pos)&&!opts.includes(x)));opts.push(extra)}opts=opts.sort(()=>Math.random()-.5).slice(0,Math.min(5,Math.max(3,opts.length)));$('draftTitle').textContent=`Pick ${state.draftIndex+1}/11 · ${pos}`;$('draftCountry').textContent=`Random country: ${country}. Choose one player who can play ${pos}.`;$('draftBar').style.width=`${state.draftIndex/11*100}%`;updatePills();$('options').innerHTML=opts.map((x,i)=>card(x,pos,i)).join('')}
++function card(x,pos,i){return`<article class="player-card" onclick="pick(${i})" data-i="${i}"><div class="rating">${x.rating}</div><h3>${x.name}</h3><p class="muted">${x.country} · Drafted as ${pos} · Plays ${x.pos.join('/')}</p><span class="pill">${x.league}</span> <span class="pill">${x.style}</span><div class="stats">${['pace','shooting','passing','dribbling','defending','physical'].map(s=>`<div class="mini">${s.slice(0,3).toUpperCase()}<b>${x[s]}</b></div>`).join('')}</div></article>`}
++function pick(i){const el=document.querySelector(`[data-i="${i}"]`);const name=el.querySelector('h3').textContent;const player=players.find(p=>p.name===name);state.squad.push({...player,slot:positions[state.draftIndex]});state.draftIndex++; if(state.draftIndex>=positions.length){renderSquad();show('squadScreen')}else renderDraft()} window.pick=pick;
++function teamRating(){return Math.round(state.squad.reduce((a,p)=>a+p.rating,0)/Math.max(1,state.squad.length))}function chemistry(){let c=55;for(let i=0;i<state.squad.length;i++)for(let j=i+1;j<state.squad.length;j++){if(state.squad[i].country===state.squad[j].country)c+=2.8;if(state.squad[i].league===state.squad[j].league)c+=1.4;if(state.squad[i].style===state.squad[j].style)c+=1.1}return Math.round(clamp(c,45,100))}function updatePills(){$('chemPill').textContent=`Chemistry ${chemistry()}`;$('ratingPill').textContent=`Rating ${teamRating()||0}`}
++function renderSquad(){updatePills();$('squadSummary').innerHTML=`<span class="pill">Overall ${teamRating()}</span><span class="pill">Chemistry ${chemistry()}</span><span class="pill">Style ${teamStyle()}</span>`;$('lineup').innerHTML=state.squad.map(p=>`<div class="slot"><strong>${p.slot}</strong>${p.name}<br><span class="muted">${p.country} · ${p.rating} OVR · ${p.style}</span></div>`).join('')}
++function teamStyle(){const counts={};state.squad.forEach(p=>counts[p.style]=(counts[p.style]||0)+1);return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'balanced'}
++$('startTournament').onclick=()=>{makeFixtures();renderFixtures();show('tournamentScreen')};
++function makeFixtures(){const pool=[...tournaments[state.mode].opponents].sort(()=>Math.random()-.5);const rounds=['Quarterfinal','Semifinal','Final'];state.fixtures=rounds.map((r,i)=>({round:r,opp:pool[i],result:null}));$('tournamentTitle').textContent=tournaments[state.mode].name}
++function renderFixtures(){let html=state.fixtures.map((f,i)=>`<div class="fixture"><div><b>${f.round}</b><br><span class="muted">${f.opp} · ${opponents[f.opp].rating} OVR · ${opponents[f.opp].style}</span></div><div class="${f.result?.won?'won':'lost'}">${f.result?f.result.score:'Not played'}</div></div>`).join('');$('fixtures').innerHTML=html;$('playNext').disabled=!!state.fixtures.find(f=>f.result&&!f.result.won)||!state.fixtures.find(f=>!f.result)}
++$('playNext').onclick=()=>startMatch(state.fixtures.findIndex(f=>!f.result));
++function startMatch(idx){const f=state.fixtures[idx], o=opponents[f.opp];state.match={idx,minute:0,home:0,away:0,shots:0,oppShots:0,poss:clamp(45+(teamRating()-o.rating)*1.2+(chemistry()-70)*.25,35,65),events:[],goals:[],assists:[],motm:null,paused:false};$('oppName').textContent=f.opp;$('oppStyle').textContent=`${o.rating} OVR · ${o.style} · DEF ${o.defense}`;$('userStyle').textContent=`${teamRating()} OVR · ${teamStyle()} · Chemistry ${chemistry()}`;$('roundLabel').textContent=f.round;$('log').innerHTML='';show('matchScreen');paintMatch();log(`0' Kickoff against ${f.opp}.`)}
++$('simBtn').onclick=()=>simUntilEvent();$('autoBtn').onclick=()=>{while(state.match.minute<90&&!state.match.paused)tick(false);finishMatch()};
++function tick(canPause=true){let m=state.match;m.minute++;if(Math.random()<.055){const oppChance=Math.random()>(teamRating()+chemistry()/3)/(teamRating()+chemistry()/3+opponents[state.fixtures[m.idx].opp].rating+20); if(oppChance)oppAttack(); else if(canPause&&Math.random()<.72)return decision(); else userChance('flow')} if(m.minute===89&&canPause&&Math.random()<.55)return decision('Last-minute attack');paintMatch()}
++function simUntilEvent(){if(state.match.paused)return;while(state.match.minute<90&&!state.match.paused)tick(true);if(state.match.minute>=90)finishMatch()}
++function decision(type){const m=state.match;type=type||rnd(['Counter attack','Free kick','Corner','Penalty','1v1 chance','Defensive mistake','Long shot chance']);const actor=chooseActor(type);m.paused=true;$('decision').classList.remove('hidden');$('decision').innerHTML=`<h3>${m.minute}' ${type}! ${actor.name} is central to the moment. What do you do?</h3><p class="muted">Success uses player stats, opponent defense, chemistry, match situation, and randomness.</p><div class="actions">${['Shoot','Dribble','Pass','Hold the ball'].map(c=>`<button onclick="resolveChoice('${c}','${actor.name}','${type}')">${c}</button>`).join('')}</div>`;paintMatch()}
++function chooseActor(type){if(type==='Penalty'||type.includes('Long'))return [...state.squad].sort((a,b)=>b.shooting-a.shooting)[0];if(type==='Corner'||type==='Free kick')return [...state.squad].sort((a,b)=>b.passing-a.passing)[0];return rnd(state.squad.filter(p=>['ST','LW','RW','CAM','CM'].includes(p.slot)))}
++function resolveChoice(choice,name,type){const p=state.squad.find(x=>x.name===name), o=opponents[state.fixtures[state.match.idx].opp];let skill=choice==='Shoot'?p.shooting*.75+p.rating*.25:choice==='Dribble'?p.dribbling*.55+p.pace*.35+p.rating*.1:choice==='Pass'?p.passing*.7+p.rating*.3:p.physical*.45+p.dribbling*.25+p.rating*.3;if(type==='Penalty')skill=p.shooting*.85+p.rating*.15+12;if(type==='Defensive mistake'&&choice==='Shoot')skill+=8;let chance=clamp((skill-o.defense+chemistry()*.18+45)/100,0.18,0.84);if(state.match.home<state.match.away&&state.match.minute>75)chance+=.04;const roll=Math.random();state.match.paused=false;$('decision').classList.add('hidden');if(roll<chance*.38&&(choice==='Shoot'||type==='Penalty'))goal(p,null,`${choice} succeeds from the ${type.toLowerCase()}`);else if(roll<chance){if(choice==='Pass'){const scorer=chooseActor('1v1 chance');goal(scorer,p,`${p.name} slips a perfect pass to ${scorer.name}`)}else log(`${state.match.minute}' ${p.name}: ${rnd(['successful pass','foul won','chance created','shot saved','blocked effort'])}.`),state.match.shots++;}else{log(`${state.match.minute}' ${p.name} loses it — ${rnd(['counter attack conceded','blocked','save','miss','lost possession'])}.`);if(Math.random()<.28)oppAttack()}paintMatch()}
++window.resolveChoice=resolveChoice;
++function userChance(src){const p=chooseActor('1v1 chance');state.match.shots++;if(Math.random()<clamp((teamRating()-opponents[state.fixtures[state.match.idx].opp].defense+chemistry()*.15+38)/100,0.08,.42))goal(p,null,`Open-play ${src} chance`);else log(`${state.match.minute}' ${p.name} tests the keeper.`)}
++function oppAttack(){const m=state.match,o=opponents[state.fixtures[m.idx].opp];m.oppShots++;if(Math.random()<clamp((o.rating-(teamRating()-4)+(100-chemistry())*.08+32)/100,0.07,.36)){m.away++;m.goals.push(`${m.minute}' ${state.fixtures[m.idx].opp}`);log(`${m.minute}' Goal for ${state.fixtures[m.idx].opp}. Defensive lapse punished.`)}else log(`${m.minute}' ${state.fixtures[m.idx].opp} chance: saved or blocked.`)}
++function goal(p,a,note){let m=state.match;m.home++;m.shots++;m.goals.push(`${m.minute}' ${p.name}`);if(a)m.assists.push(a.name);log(`${m.minute}' GOAL! ${p.name}. ${note}. ${a?`Assist: ${a.name}.`:''}`)}
++function log(t){state.match.events.unshift(t);$('log').innerHTML=state.match.events.map(e=>`<div class="log-line">${e}</div>`).join('')}
++function paintMatch(){const m=state.match;$('minute').textContent=`${m.minute}'`;$('homeGoals').textContent=m.home;$('awayGoals').textContent=m.away;$('poss').textContent=`${Math.round(m.poss)}%`;$('shots').textContent=`${m.shots} - ${m.oppShots}`}
++function finishMatch(){let m=state.match;if(m.home===m.away){log(`90' Level after full time — penalties!`);const edge=(teamRating()+chemistry()/4)-(opponents[state.fixtures[m.idx].opp].rating+10);Math.random()<clamp(.5+edge/100,.25,.75)?m.home++:m.away++;}const won=m.home>m.away;const f=state.fixtures[m.idx];f.result={won,score:`${m.home}-${m.away}`};m.motm=won?(m.goals.length?m.goals[m.goals.length-1].replace(/^\d+' /,''):rnd(state.squad).name):f.opp;renderReport(won);show('postMatch')}
++function renderReport(won){const m=state.match,f=state.fixtures[m.idx];$('report').innerHTML=`<div class="metrics"><div class="statbox">Final score<br><b>${m.home}-${m.away}</b></div><div class="statbox">Shots<br><b>${m.shots}-${m.oppShots}</b></div><div class="statbox">Possession<br><b>${Math.round(m.poss)}%</b></div><div class="statbox">Man of the Match<br><b>${m.motm}</b></div></div><h3 style="margin-top:16px">Goalscorers</h3><p>${m.goals.join('<br>')||'No goals'}</p><h3>Assists</h3><p>${m.assists.join(', ')||'None recorded'}</p><h3>Key events</h3><p class="muted">${m.events.slice().reverse().join('<br>')}</p>`;$('continueTournament').textContent=won?'Advance':'View Tournament Summary'}
++$('continueTournament').onclick=()=>{const lost=state.fixtures.find(f=>f.result&&!f.result.won);if(lost)return end(false);if(state.fixtures.every(f=>f.result))return end(true);renderFixtures();show('tournamentScreen')};
++function end(won){$('endIcon').textContent=won?'🏆':'💔';$('endTitle').textContent=won?'Trophy Celebration!':'Tournament Summary';$('endText').textContent=won?`Your Ultimate XI conquered the ${tournaments[state.mode].name}.`:`Your run ended in the ${state.fixtures.find(f=>f.result&&!f.result.won).round}.`; $('endSummary').innerHTML=`<p><b>Squad rating:</b> ${teamRating()} · <b>Chemistry:</b> ${chemistry()} · <b>Style:</b> ${teamStyle()}</p>`;show('endScreen')}
++</script>
+ </body>
+ </html>
